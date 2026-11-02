@@ -1,0 +1,245 @@
+
+/* =================================
+   GENERAL DESIGN
+================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #dcefe2;
+    color: #234b35;
+}
+
+
+/* =================================
+   HEADER
+================================= */
+
+header {
+    background: #087f43;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+
+/* =================================
+   MAIN CONTAINER
+================================= */
+
+.container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 20px;
+
+    display: flex;
+    gap: 25px;
+    align-items: stretch;
+}
+
+
+/* =================================
+   LEFT PANEL
+================================= */
+
+.left-panel {
+    flex: 1;
+    background: #0b8c4b;
+    color: white;
+
+    border-radius: 15px;
+    padding: 35px;
+    text-align: center;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* CB LOGO */
+
+.logo {
+    width: 130px;
+    height: 130px;
+
+    background: white;
+    color: #087f43;
+
+    border-radius: 50%;
+    border: 5px solid #bce5c9;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 48px;
+    font-weight: bold;
+}
+
+.left-panel h2 {
+    margin-top: 25px;
+    font-size: 25px;
+}
+
+.left-panel p {
+    line-height: 1.7;
+}
+
+
+/* =================================
+   RIGHT PANEL
+================================= */
+
+.right-panel {
+    flex: 1.5;
+    background: white;
+
+    border-radius: 15px;
+    padding: 30px;
+
+    box-shadow: 0 5px 15px #00000015;
+}
+
+h3 {
+    color: #087f43;
+    margin-top: 0;
+}
+
+
+/* =================================
+   SELECTOR AND INPUTS
+================================= */
+
+select,
+input,
+textarea {
+    width: 100%;
+
+    padding: 12px;
+    margin: 8px 0 15px;
+
+    border: 1px solid #b7cdbd;
+    border-radius: 6px;
+
+    font-size: 15px;
+}
+
+
+/* BUTTON */
+
+button {
+    background: #087f43;
+    color: white;
+
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+
+    cursor: pointer;
+    font-size: 15px;
+}
+
+button:hover {
+    background: #056332;
+}
+
+
+/* TUTORIAL SELECTOR */
+
+.tutorial {
+    display: flex;
+    gap: 10px;
+}
+
+.tutorial select {
+    flex: 1;
+}
+
+
+/* =================================
+   FORM SECTION
+================================= */
+
+.form-section {
+    margin-top: 30px;
+
+    border-top: 2px solid #dcefe2;
+    padding-top: 25px;
+}
+
+.form-section p {
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+label {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+
+/* BOOK APPOINTMENT BUTTON */
+
+.book-btn {
+    width: 100%;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+
+/* =================================
+   FOOTER
+================================= */
+
+footer {
+    text-align: center;
+    padding: 20px;
+
+    color: #567761;
+    font-size: 13px;
+}
+
+
+/* =================================
+   MOBILE RESPONSIVE DESIGN
+================================= */
+
+@media (max-width: 768px) {
+
+    .container {
+        flex-direction: column;
+        margin: 20px auto;
+        padding: 15px;
+    }
+
+    .left-panel {
+        padding: 25px;
+    }
+
+    .logo {
+        width: 90px;
+        height: 90px;
+        font-size: 35px;
+    }
+
+    header h1 {
+        font-size: 22px;
+    }
+
+}
