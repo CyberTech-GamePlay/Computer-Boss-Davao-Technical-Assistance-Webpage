@@ -1,6 +1,6 @@
 (() => {
-    const SUPABASE_URL = "";
-    const SUPABASE_ANON_KEY = "";
+    const SUPABASE_URL = "https://yghfwmyqycsqkjvzeerl.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_AMDK_8LFEmG69gBYmwdPEQ_dGWqiBB5";
     const STORAGE_BUCKET = "tutorial-videos";
 
     const app = window.tutorialApp;
