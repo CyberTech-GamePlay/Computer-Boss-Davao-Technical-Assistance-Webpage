@@ -556,7 +556,7 @@
             <div class="dialog-header">
                 <div>
                     <h2 id="editor-title">Add a tutorial</h2>
-                    <p class="dialog-subtitle">Add a video link or upload a video file to Supabase Storage.</p>
+                    <p class="dialog-subtitle">Add a video link, upload a video file, and set a thumbnail.</p>
                 </div>
                 <button class="player-close" type="button" data-close-dialog="editor-dialog" aria-label="Close tutorial form">×</button>
             </div>
@@ -578,6 +578,17 @@
                     <option>Others</option>
                 </select>
             </div>
+            
+            <!-- NEW: Thumbnail Image Upload -->
+            <div class="form-field">
+                <label for="tutorial-thumbnail">Thumbnail Image (Optional)</label>
+                <input id="tutorial-thumbnail" type="file" accept="image/png, image/jpeg, image/webp">
+                <p class="field-help">Upload a cover image for the video. If omitted, a generated color block will be used.</p>
+                <div id="thumbnail-preview" style="margin-top: 8px; display: none;">
+                    <img id="thumbnail-preview-img" src="" alt="Thumbnail preview" style="max-width: 100%; max-height: 150px; border-radius: 8px; border: 1px solid var(--line); object-fit: cover;">
+                </div>
+            </div>
+
             <div class="form-field">
                 <label for="tutorial-url">Video source link</label>
                 <input id="tutorial-url" type="url" placeholder="https://...">
@@ -599,20 +610,10 @@
 
     <script>
         (() => {
-            // These sample guides are shown until the Supabase project is configured.
             const sampleTutorials = [
-                { title: "Speed Up a Slow Windows PC", description: "Simple settings and cleanup steps that can help your computer feel faster.", category: "Personal Computer", symbol: "↗", color: "linear-gradient(135deg,#34452f,#1d2822)", videoUrl: "" },
-                { title: "Build a Clean, Organized Desktop", description: "Keep your files easy to find and make your Windows desktop work for you.", category: "Personal Computer", symbol: "▦", color: "linear-gradient(135deg,#29434a,#1b282e)", videoUrl: "" },
-                { title: "Free Up Space on Your Computer", description: "Find large files and safely clear storage you no longer need.", category: "Personal Computer", symbol: "◌", color: "linear-gradient(135deg,#514535,#30251d)", videoUrl: "" },
-                { title: "Take a Screenshot in Windows", description: "Learn quick ways to capture, save, and share what is on your screen.", category: "Personal Computer", symbol: "▣", color: "linear-gradient(135deg,#423953,#262131)", videoUrl: "" },
-                { title: "Choose the Right Computer Parts", description: "A beginner-friendly look at the components inside a desktop PC.", category: "Personal Computer", symbol: "⌘", color: "linear-gradient(135deg,#354850,#202b32)", videoUrl: "" },
-                { title: "Connect a Second Monitor", description: "Set up an extra display and arrange your screens the way you like.", category: "Others", symbol: "▤", color: "linear-gradient(135deg,#4d3e31,#30241e)", videoUrl: "" },
-                { title: "Make Your Laptop Battery Last Longer", description: "Practical power settings to help you stay unplugged for longer.", category: "Laptop", symbol: "▰", color: "linear-gradient(135deg,#3b4930,#242b1d)", videoUrl: "" },
-                { title: "Install Apps the Safe Way", description: "Know where to download software and what to check before installing.", category: "Personal Computer", symbol: "⬇", color: "linear-gradient(135deg,#473b51,#2b2332)", videoUrl: "" },
-                { title: "Set Up a Password Manager", description: "Get started storing strong, unique passwords in one secure place.", category: "Personal Computer", symbol: "◇", color: "linear-gradient(135deg,#354638,#20291f)", videoUrl: "" },
-                { title: "Spot Suspicious Emails", description: "Learn the warning signs of phishing before you click a link.", category: "Personal Computer", symbol: "✉", color: "linear-gradient(135deg,#4d3a3b,#302122)", videoUrl: "" },
-                { title: "Back Up Your Important Files", description: "Create a simple backup routine for the files you cannot replace.", category: "Personal Computer", symbol: "⤴", color: "linear-gradient(135deg,#35434d,#222b32)", videoUrl: "" },
-                { title: "Keep Your Computer Up to Date", description: "Understand updates and how to keep your system protected.", category: "Personal Computer", symbol: "⟳", color: "linear-gradient(135deg,#4b4931,#2c2a1d)", videoUrl: "" }
+                { id: "1", title: "Speed Up a Slow Windows PC", description: "Simple settings and cleanup steps that can help your computer feel faster.", category: "Personal Computer", symbol: "↗", color: "linear-gradient(135deg,#34452f,#1d2822)", videoUrl: "", thumbnailUrl: null },
+                { id: "2", title: "Build a Clean, Organized Desktop", description: "Keep your files easy to find and make your Windows desktop work for you.", category: "Personal Computer", symbol: "▦", color: "linear-gradient(135deg,#29434a,#1b282e)", videoUrl: "", thumbnailUrl: null },
+                { id: "3", title: "Make Your Laptop Battery Last Longer", description: "Practical power settings to help you stay unplugged for longer.", category: "Laptop", symbol: "▰", color: "linear-gradient(135deg,#3b4930,#242b1d)", videoUrl: "", thumbnailUrl: null }
             ];
 
             let tutorials = sampleTutorials;
@@ -626,6 +627,28 @@
             const toast = document.querySelector("#toast");
             let selectedCategory = "All";
             let toastTimer;
+
+            // NEW: Thumbnail preview logic
+            const thumbnailInput = document.querySelector("#tutorial-thumbnail");
+            const thumbnailPreview = document.querySelector("#thumbnail-preview");
+            const thumbnailPreviewImg = document.querySelector("#thumbnail-preview-img");
+
+            if (thumbnailInput) {
+                thumbnailInput.addEventListener("change", (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            thumbnailPreviewImg.src = event.target.result;
+                            thumbnailPreview.style.display = "block";
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        thumbnailPreview.style.display = "none";
+                        thumbnailPreviewImg.src = "";
+                    }
+                });
+            }
 
             const escapeHtml = value => String(value).replace(/[&<>'"]/g, character => ({
                 "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;"
@@ -641,12 +664,23 @@
 
                 totalCount.textContent = tutorials.length;
                 resultCount.textContent = `${visibleTutorials.length} ${visibleTutorials.length === 1 ? "video" : "videos"}`;
+                
                 grid.innerHTML = visibleTutorials.length
-                    ? visibleTutorials.map((tutorial, index) => `
+                    ? visibleTutorials.map((tutorial, index) => {
+                        // NEW: Determine background style based on thumbnail presence
+                        const bgStyle = tutorial.thumbnailUrl 
+                            ? `background: url('${escapeHtml(tutorial.thumbnailUrl)}') center/cover no-repeat;` 
+                            : `background: ${tutorial.color}`;
+                        
+                        const symbolHtml = tutorial.thumbnailUrl 
+                            ? '' 
+                            : `<span class="thumbnail-symbol" aria-hidden="true">${escapeHtml(tutorial.symbol)}</span>`;
+
+                        return `
                         <article class="video-card">
-                            <button class="thumbnail" type="button" style="--thumb:${tutorial.color}" data-video="${tutorials.indexOf(tutorial)}" aria-label="Play ${escapeHtml(tutorial.title)}">
+                            <button class="thumbnail" type="button" style="${bgStyle}" data-video="${tutorials.indexOf(tutorial)}" aria-label="Play ${escapeHtml(tutorial.title)}">
+                                ${symbolHtml}
                                 <span class="thumbnail-label">${escapeHtml(tutorial.category)} guide</span>
-                                <span class="thumbnail-symbol" aria-hidden="true">${escapeHtml(tutorial.symbol)}</span>
                                 <span class="play-mark" aria-hidden="true">▶</span>
                             </button>
                             <div class="video-info">
@@ -659,7 +693,7 @@
                             </div>
                             ${isAdmin ? `<div class="video-admin-actions"><button class="video-edit-button" type="button" data-edit-video="${escapeHtml(tutorial.id)}">Edit tutorial</button></div>` : ""}
                         </article>
-                    `).join("")
+                    `}).join("")
                     : '<p class="empty">No tutorials match your search. Try another title or category.</p>';
 
                 grid.querySelectorAll("[data-video]").forEach(button => {
