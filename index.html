@@ -3,588 +3,808 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f7f8f5">
+    <meta name="description" content="Practical computer help, explained one tutorial at a time.">
     <title>Computer Boss Tutorial Compilations</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            color-scheme: light;
+            --page: #f7f8f5;
+            --surface: #ffffff;
+            --surface-raised: #eff1eb;
+            --line: #e2e5dd;
+            --text: #24271f;
+            --muted: #676d62;
+            --accent: #587a29;
+            --accent-dark: #eaf0df;
+            --radius: 14px;
         }
+
+        * { box-sizing: border-box; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            color: #e0e0e0;
+            min-width: 320px;
             min-height: 100vh;
+            margin: 0;
+            background: var(--page);
+            color: var(--text);
+            font: 14px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
 
-        header {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 1rem 2rem;
+        button, input { font: inherit; }
+        button { color: inherit; }
+        a { color: inherit; }
+        .app { min-height: 100vh; }
+
+        .sidebar {
+            position: fixed;
+            inset: 0 auto 0 0;
+            z-index: 3;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            width: 248px;
+            flex-direction: column;
+            padding: 28px 18px 20px;
+            border-right: 1px solid var(--line);
+            background: #ffffff;
         }
 
         .brand {
             display: flex;
             align-items: center;
-            gap: 1rem;
-        }
-
-        #brand-admin-button {
-            background: none;
-            border: none;
-            color: #e0e0e0;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 0.5rem;
-            transition: background 0.2s;
-        }
-
-        #brand-admin-button:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .brand-text h1 {
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-
-        .brand-text p {
-            font-size: 0.875rem;
-            opacity: 0.7;
-        }
-
-        nav {
-            background: rgba(0, 0, 0, 0.2);
-            padding: 1rem 2rem;
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        nav a {
-            color: #e0e0e0;
+            gap: 12px;
+            width: 100%;
+            margin: 0 0 42px;
+            padding: 0 8px;
+            border: 0;
+            background: transparent;
+            color: inherit;
             text-decoration: none;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            transition: background 0.2s;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .brand-mark {
+            display: grid;
+            width: 38px;
+            height: 38px;
+            flex: 0 0 auto;
+            place-items: center;
+            border-radius: 12px;
+            background: var(--accent);
+            color: #171a11;
+            font-size: 15px;
+            font-weight: 900;
+            letter-spacing: -.08em;
+            transition: transform .18s ease, box-shadow .18s ease;
+        }
+
+        .brand:hover .brand-mark { transform: translateY(-1px); box-shadow: 0 5px 16px rgba(88,122,41,.22); }
+        .brand-name { font-size: 13px; font-weight: 800; letter-spacing: .12em; }
+        .brand-caption { display: block; margin-top: 1px; color: var(--muted); font-size: 10px; font-weight: 500; letter-spacing: .02em; }
+        .nav-label { margin: 0 10px 10px; color: #777a81; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+        .nav-list { display: grid; gap: 5px; }
+
+        .nav-link {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 12px;
+            min-height: 42px;
+            padding: 9px 11px;
+            border: 1px solid transparent;
+            border-radius: 9px;
+            color: var(--muted);
+            font-size: 13px;
+            text-decoration: none;
+            transition: background .18s ease, color .18s ease;
         }
 
-        nav a:hover {
-            background: rgba(255, 255, 255, 0.1);
+        .nav-link:hover, .nav-link.active { background: var(--surface-raised); color: var(--text); }
+        .nav-link.active { color: var(--accent); }
+        .nav-icon { display: grid; width: 19px; place-items: center; font-size: 16px; }
+        .sidebar-note { margin-top: auto; padding: 16px 10px 0; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; }
+        .sidebar-note strong { display: block; margin-bottom: 4px; color: var(--text); font-size: 12px; }
+
+        .main { min-width: 0; margin-left: 248px; }
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            display: flex;
+            min-height: 74px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 14px clamp(22px, 4vw, 58px);
+            border-bottom: 1px solid rgba(255,255,255,.06);
+            background: rgba(247,248,245,.94);
+            backdrop-filter: blur(16px);
         }
+
+        .breadcrumb { color: var(--muted); font-size: 12px; }
+        .breadcrumb strong { color: var(--text); font-weight: 600; }
+        .top-actions { display: flex; align-items: center; gap: 11px; }
+        .search-wrap { position: relative; width: min(280px, 38vw); }
+        .search-icon { position: absolute; top: 9px; left: 12px; color: var(--muted); font-size: 17px; }
+
+        .search {
+            width: 100%;
+            padding: 10px 12px 10px 37px;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            outline: 0;
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        .search:focus { border-color: #748e48; box-shadow: 0 0 0 3px rgba(197,243,107,.1); }
+        .admin-primary, .admin-secondary {
+            min-height: 38px;
+            padding: 8px 13px;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            background: var(--surface);
+            color: var(--text);
+            font-size: 12px;
+            font-weight: 650;
+            cursor: pointer;
+            transition: background .18s ease, border-color .18s ease, transform .18s ease;
+        }
+
+        .admin-secondary:hover { border-color: #bac5a8; background: var(--surface-raised); }
+        .admin-primary { border-color: var(--accent); background: var(--accent); color: #fff; }
+        .admin-primary:hover { background: #48691f; }
+        .admin-secondary { background: var(--surface-raised); }
+        .main-inner { width: min(100%, 1600px); margin: 0 auto; padding: 42px clamp(22px, 4vw, 58px) 48px; }
 
         .hero {
-            text-align: center;
-            padding: 4rem 2rem;
-            background: rgba(0, 0, 0, 0.2);
-        }
-
-        .hero h2 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .hero p {
-            font-size: 1.125rem;
-            opacity: 0.8;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .section {
-            padding: 3rem 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .section h3 {
-            font-size: 1.75rem;
-            margin-bottom: 2rem;
-        }
-
-        #video-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .video-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 1rem;
-            overflow: hidden;
-            transition: transform 0.2s, box-shadow 0.2s;
-            cursor: pointer;
-        }
-
-        .video-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-        }
-
-        .video-thumbnail {
-            width: 100%;
-            aspect-ratio: 16/9;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4rem;
             position: relative;
-        }
-
-        .video-info {
-            padding: 1.5rem;
-        }
-
-        .video-info h4 {
-            font-size: 1.125rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .video-info p {
-            font-size: 0.875rem;
-            opacity: 0.7;
-            margin-bottom: 1rem;
-        }
-
-        .video-category {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 1rem;
-            font-size: 0.75rem;
-        }
-
-        .video-actions {
-            padding: 0 1.5rem 1.5rem;
+            overflow: hidden;
             display: flex;
-            gap: 0.5rem;
+            min-height: 220px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            padding: clamp(26px, 4vw, 46px);
+            border: 1px solid #405b45;
+            border-radius: 18px;
+            background: linear-gradient(112deg, #294332 0%, #34513a 52%, #3b5840 100%);
+            --hero-accent: #d4eda8;
         }
 
-        .video-actions button {
-            flex: 1;
-            padding: 0.5rem;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: #e0e0e0;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: background 0.2s;
+        .hero::after {
+            position: absolute;
+            top: -145px;
+            right: -52px;
+            width: 370px;
+            height: 370px;
+            border: 1px solid rgba(222,241,192,.16);
+            border-radius: 50%;
+            box-shadow: 0 0 0 36px rgba(222,241,192,.035), 0 0 0 72px rgba(222,241,192,.025);
+            content: "";
+            pointer-events: none;
         }
 
-        .video-actions button:hover {
-            background: rgba(255, 255, 255, 0.2);
+        .hero-copy { position: relative; z-index: 1; max-width: 680px; }
+        .hero .eyebrow { color: var(--hero-accent); }
+        .hero h1, .hero-count strong { color: var(--hero-accent); }
+        .hero h1 { color: #ffffff; }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(30px, 4vw, 48px);
+            line-height: 1.08;
+            letter-spacing: -.055em;
         }
 
-        dialog {
-            background: #2d2d2d;
-            color: #e0e0e0;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1rem;
-            padding: 2rem;
-            max-width: 500px;
-            width: 90%;
+        .hero-text { max-width: 490px; margin: 13px 0 0; color: #d5ded2; font-size: 14px; }
+        .hero-count { position: relative; z-index: 1; min-width: 114px; text-align: center; }
+        .hero-count strong { display: block; font-size: 35px; line-height: 1.1; letter-spacing: -.06em; }
+        .hero-count span { color: #d5ded2; font-size: 11px; }
+
+        .section-head { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin: 38px 0 17px; }
+        .section-head h2 { margin: 0; font-size: 20px; letter-spacing: -.03em; }
+        .section-head p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+        .result-count { color: var(--muted); font-size: 12px; }
+        .filters { display: flex; gap: 8px; overflow-x: auto; padding: 0 0 4px; scrollbar-width: thin; }
+
+        .filter {
+            flex: 0 0 auto;
+            padding: 7px 13px;
+            border: 1px solid var(--line);
+            border-radius: 7px;
+            background: transparent;
+            color: var(--muted);
+            font-size: 12px;
+            transition: .18s ease;
         }
 
-        dialog::backdrop {
-            background: rgba(0, 0, 0, 0.7);
+        .filter:hover { border-color: #51534d; color: var(--text); }
+        .filter.active { border-color: var(--accent); background: var(--accent); color: #171a11; font-weight: 700; }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 24px 16px;
+            margin-top: 18px;
         }
 
-        dialog h3 {
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem;
-        }
+        .video-card { min-width: 0; }
 
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
+        .thumbnail {
+            position: relative;
+            overflow: hidden;
+            display: grid;
             width: 100%;
-            padding: 0.75rem;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 0.5rem;
-            color: #e0e0e0;
-            font-family: inherit;
-        }
-
-        .form-group textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-
-        .dialog-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-
-        button.primary {
-            background: #4a90e2;
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
+            aspect-ratio: 16 / 9;
+            place-items: center;
+            border: 1px solid rgba(255,255,255,.06);
+            border-radius: 11px;
+            background: var(--thumb, linear-gradient(135deg,#35412b,#18201b));
+            color: rgba(255,255,255,.86);
             cursor: pointer;
-            font-weight: 500;
-            transition: background 0.2s;
+            isolation: isolate;
+            transition: border-color .2s ease, transform .2s ease;
         }
 
-        button.primary:hover {
-            background: #357abd;
+        .thumbnail::before, .thumbnail::after { position: absolute; z-index: -1; border: 1px solid rgba(255,255,255,.13); border-radius: 50%; content: ""; }
+        .thumbnail::before { width: 60%; aspect-ratio: 1; transform: translate(35%, -22%); }
+        .thumbnail::after { width: 40%; aspect-ratio: 1; transform: translate(62%, -36%); }
+        .thumbnail:hover { transform: translateY(-2px); border-color: rgba(197,243,107,.42); }
+        .thumbnail-symbol { font-size: clamp(28px, 4vw, 46px); font-weight: 600; line-height: 1; opacity: .9; }
+
+        .play-mark {
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+            display: grid;
+            width: 31px;
+            height: 31px;
+            place-items: center;
+            border: 1px solid rgba(255,255,255,.19);
+            border-radius: 50%;
+            background: rgba(13,14,13,.63);
+            color: #fff;
+            font-size: 12px;
+            transition: background .2s ease, color .2s ease;
         }
 
-        button.primary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .thumbnail:hover .play-mark { background: var(--accent); color: #161811; }
+        .thumbnail-label { position: absolute; top: 10px; left: 11px; color: rgba(255,255,255,.78); font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+        .video-info { display: grid; grid-template-columns: 31px minmax(0, 1fr); gap: 10px; padding: 12px 2px 0; }
+        .video-admin-actions { display: flex; justify-content: flex-end; margin-top: 9px; }
+        .video-edit-button { padding: 5px 9px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface); color: var(--accent); font-size: 11px; font-weight: 650; cursor: pointer; }
+        .video-edit-button:hover { background: var(--surface-raised); }
+
+        .channel-mark {
+            display: grid;
+            width: 31px;
+            height: 31px;
+            place-items: center;
+            border: 1px solid #dfe5d4;
+            border-radius: 50%;
+            background: #f0f4e9;
+            color: var(--accent);
+            font-size: 10px;
+            font-weight: 800;
         }
 
-        button.secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: #e0e0e0;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        button.secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        #admin-account {
-            font-size: 0.875rem;
-            opacity: 0.7;
-        }
-
-        #admin-list {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .admin-list-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .admin-list-title {
-            font-weight: 500;
-            margin-bottom: 0.25rem;
-        }
-
-        .admin-list-meta {
-            font-size: 0.875rem;
-            opacity: 0.7;
-        }
-
-        .admin-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: #e0e0e0;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .admin-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        #admin-notice {
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-            background: rgba(255, 193, 7, 0.1);
-            color: #ffc107;
-        }
-
-        #admin-notice.admin-error {
-            background: rgba(244, 67, 54, 0.1);
-            color: #f44336;
-        }
+        .video-copy { min-width: 0; }
+        .video-title { display: -webkit-box; overflow: hidden; margin: 0; font-size: 13px; font-weight: 650; line-height: 1.4; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+        .video-description { display: -webkit-box; overflow: hidden; margin: 5px 0 0; color: var(--muted); font-size: 11px; line-height: 1.45; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+        .video-meta { display: flex; align-items: center; gap: 6px; margin-top: 7px; color: #777a81; font-size: 10px; }
+        .meta-dot { width: 3px; height: 3px; border-radius: 50%; background: #777a81; }
+        .empty { grid-column: 1/-1; padding: 44px 20px; border: 1px dashed var(--line); border-radius: var(--radius); color: var(--muted); text-align: center; }
+        .footer { margin-top: 42px; padding-top: 17px; border-top: 1px solid var(--line); color: #73796e; font-size: 11px; }
 
         .toast {
             position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: #2d2d2d;
-            color: #e0e0e0;
-            padding: 1rem 1.5rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            z-index: 1000;
-            animation: slideIn 0.3s ease-out;
+            right: 22px;
+            bottom: 22px;
+            z-index: 6;
+            max-width: min(390px, calc(100vw - 44px));
+            padding: 12px 16px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: var(--surface-raised);
+            box-shadow: 0 12px 36px rgba(0,0,0,.3);
+            color: var(--text);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(8px);
+            transition: opacity .2s ease, transform .2s ease;
         }
 
-        @keyframes slideIn {
-            from {
-                transform: translateX(400px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+        dialog {
+            width: min(1040px, calc(100% - 32px));
+            max-width: none;
+            max-height: calc(100% - 32px);
+            padding: 0;
+            border: 1px solid var(--line);
+            border-radius: 15px;
+            background: #ffffff;
+            color: var(--text);
+            box-shadow: 0 28px 100px rgba(0,0,0,.65);
         }
 
-        .close-dialog {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: none;
-            border: none;
-            color: #e0e0e0;
-            font-size: 1.5rem;
+        dialog::backdrop { background: rgba(0,0,0,.82); backdrop-filter: blur(5px); }
+        dialog.compact-dialog { width: min(560px, calc(100% - 28px)); padding: 22px; overflow-y: auto; }
+        dialog.compact-dialog::backdrop { background: rgba(21,27,19,.58); backdrop-filter: blur(4px); }
+        .dialog-header { display: flex; align-items: start; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+        .dialog-header h2 { margin: 0; font-size: 19px; letter-spacing: -.025em; }
+        .dialog-subtitle { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
+        .admin-form { display: grid; gap: 14px; }
+        .form-field { display: grid; gap: 6px; }
+        .form-field label { color: var(--text); font-size: 12px; font-weight: 650; }
+        .form-field input, .form-field textarea, .form-field select {
+            width: 100%;
+            min-height: 40px;
+            padding: 9px 11px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            outline: 0;
+            background: #fff;
+            color: var(--text);
+        }
+        .form-field textarea { min-height: 82px; resize: vertical; }
+        .form-field input:focus, .form-field textarea:focus, .form-field select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(88,122,41,.12); }
+        .field-help { margin: 0; color: var(--muted); font-size: 11px; }
+        .dialog-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 6px; }
+        .admin-list { display: grid; gap: 8px; max-height: min(48vh, 420px); overflow-y: auto; margin-top: 16px; }
+        .admin-list-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface-raised); }
+        .admin-list-copy { min-width: 0; }
+        .admin-list-title { overflow: hidden; margin: 0; font-size: 12px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+        .admin-list-meta { margin: 3px 0 0; color: var(--muted); font-size: 10px; }
+        .admin-notice { margin: 8px 0 0; color: var(--muted); font-size: 12px; }
+        .admin-error { color: #a53d32; }
+        button:disabled { cursor: wait; opacity: .6; }
+        .player-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 15px 18px; }
+        .player-title { margin: 0; font-size: 14px; font-weight: 650; }
+
+        .player-close, .fullscreen-button {
+            display: grid;
+            min-width: 36px;
+            height: 36px;
+            place-items: center;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--surface-raised);
             cursor: pointer;
-            opacity: 0.7;
-            transition: opacity 0.2s;
         }
 
-        .close-dialog:hover {
-            opacity: 1;
+        .player-close:hover, .fullscreen-button:hover { border-color: #62645e; }
+        .player-frame { position: relative; overflow: hidden; width: 100%; aspect-ratio: 16 / 9; background: #050505; }
+        .player-frame iframe, .player-frame video { display: block; width: 100%; height: 100%; border: 0; background: #050505; }
+        .player-details { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 15px 18px 17px; }
+        .player-description { margin: 0; color: var(--muted); font-size: 12px; }
+        :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+        @media (max-width: 1180px) {
+            .sidebar { width: 218px; }
+            .main { margin-left: 218px; }
         }
 
-        @media (max-width: 768px) {
-            .hero h2 {
-                font-size: 1.75rem;
-            }
+        @media (max-width: 900px) {
+            .sidebar { width: 70px; align-items: center; padding: 20px 10px; }
+            .brand { margin: 0 0 34px; padding: 0; }
+            .brand-mark { width: 40px; height: 40px; }
+            .brand-name, .brand-caption, .nav-label, .nav-link span:not(.nav-icon), .sidebar-note { display: none; }
+            .nav-list { width: 100%; }
+            .nav-link { justify-content: center; padding: 10px 0; }
+            .nav-icon { width: auto; font-size: 18px; }
+            .main { margin-left: 70px; }
+            .video-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        }
 
-            #video-grid {
-                grid-template-columns: 1fr;
-            }
+        @media (max-width: 640px) {
+            .topbar { min-height: 65px; padding: 12px 17px; }
+            .breadcrumb { display: none; }
+            .search-wrap { width: 100%; }
+            .top-actions { width: 100%; }
+            .main-inner { padding: 24px 17px 36px; }
+            .hero { min-height: 190px; padding: 25px 22px; }
+            .hero-count { display: none; }
+            .hero-text { font-size: 12px; }
+            .section-head { margin-top: 29px; }
+            .video-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 12px; }
+            .video-info { grid-template-columns: 27px minmax(0, 1fr); gap: 8px; padding-top: 9px; }
+            .channel-mark { width: 27px; height: 27px; font-size: 9px; }
+            .video-title { font-size: 12px; }
+            .video-description { font-size: 10px; }
+        }
 
-            header {
-                flex-direction: column;
-                gap: 1rem;
-            }
+        @media (max-width: 400px) {
+            .sidebar { width: 55px; padding-inline: 7px; }
+            .main { margin-left: 55px; }
+            .video-grid { grid-template-columns: 1fr; gap: 22px; }
+            .video-info { grid-template-columns: 31px minmax(0, 1fr); }
+            .channel-mark { width: 31px; height: 31px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="brand">
-            <button id="brand-admin-button" aria-label="Sign in to the Computer Boss tutorial manager">⚙</button>
-            <div class="brand-text">
-                <h1>Computer Boss</h1>
-                <p>Tutorial Compilations</p>
+    <div class="app">
+        <aside class="sidebar" aria-label="Main navigation">
+            <button class="brand" id="brand-admin-button" type="button" aria-label="Sign in to the Computer Boss tutorial manager" title="Admin sign in">
+                <span class="brand-mark" aria-hidden="true">CB</span>
+                <span class="brand-name">COMPUTER BOSS<span class="brand-caption">Tutorial Compilations</span></span>
+            </button>
+
+            <p class="nav-label">Browse</p>
+            <nav class="nav-list" aria-label="Tutorial categories">
+                <a class="nav-link active" href="#tutorials" data-category="All"><span class="nav-icon" aria-hidden="true">⌂</span><span>All tutorials</span></a>
+                <a class="nav-link" href="#tutorials" data-category="Personal Computer"><span class="nav-icon" aria-hidden="true">▦</span><span>Personal Computer</span></a>
+                <a class="nav-link" href="#tutorials" data-category="Pisonet"><span class="nav-icon" aria-hidden="true">₱</span><span>Pisonet</span></a>
+                <a class="nav-link" href="#tutorials" data-category="Laptop"><span class="nav-icon" aria-hidden="true">▣</span><span>Laptop</span></a>
+                <a class="nav-link" href="#tutorials" data-category="Others"><span class="nav-icon" aria-hidden="true">◇</span><span>Others</span></a>
+            </nav>
+
+            <div class="sidebar-note">
+                <strong>Good to have you here.</strong>
+                Clear, practical help for your computer.
             </div>
-        </div>
-    </header>
+        </aside>
 
-    <nav>
-        <a href="#tutorials">⌂ All tutorials</a>
-        <a href="#tutorials">▦ Personal Computer</a>
-        <a href="#tutorials">₱ Pisonet</a>
-        <a href="#tutorials">▣ Laptop</a>
-        <a href="#tutorials">◇ Others</a>
-    </nav>
+        <main class="main">
+            <header class="topbar">
+                <div class="breadcrumb">Computer Boss <span aria-hidden="true">/</span> <strong>Tutorials</strong></div>
+                <div class="top-actions">
+                    <label class="search-wrap">
+                        <span class="search-icon" aria-hidden="true">⌕</span>
+                        <input class="search" id="search" type="search" placeholder="Search tutorials" aria-label="Search tutorials">
+                    </label>
+                </div>
+            </header>
 
-    <div class="hero">
-        <h2>Learn something useful</h2>
-        <p>Straightforward computer tips and step-by-step guides to help you get more from your tech.</p>
+            <div class="main-inner">
+                <section class="hero" aria-labelledby="page-title">
+                    <div class="hero-copy">
+                        <p class="eyebrow">Learn something useful</p>
+                        <h1 id="page-title">Computer Boss<br>Tutorial Compilations</h1>
+                        <p class="hero-text">Straightforward computer tips and step-by-step guides to help you get more from your tech.</p>
+                    </div>
+                    <div class="hero-count" aria-label="Tutorial count">
+                        <strong id="total-count">12</strong>
+                        <span>helpful guides</span>
+                    </div>
+                </section>
+
+                <section id="tutorials" aria-labelledby="tutorial-heading">
+                    <div class="section-head">
+                        <div>
+                            <h2 id="tutorial-heading">Explore tutorials</h2>
+                            <p>Pick a guide and learn at your own pace.</p>
+                        </div>
+                        <span class="result-count" id="result-count" aria-live="polite"></span>
+                    </div>
+
+                    <div class="filters" role="group" aria-label="Filter tutorials by category">
+                        <button class="filter active" type="button" data-category="All" aria-pressed="true">All videos</button>
+                        <button class="filter" type="button" data-category="Personal Computer" aria-pressed="false">Personal Computer</button>
+                        <button class="filter" type="button" data-category="Pisonet" aria-pressed="false">Pisonet</button>
+                        <button class="filter" type="button" data-category="Laptop" aria-pressed="false">Laptop</button>
+                        <button class="filter" type="button" data-category="Others" aria-pressed="false">Others</button>
+                    </div>
+
+                    <div class="video-grid" id="video-grid" aria-live="polite"></div>
+                </section>
+
+                <footer class="footer">Computer Boss · Simple guides for everyday tech.</footer>
+            </div>
+        </main>
     </div>
 
-    <section class="section" id="tutorials">
-        <h3>Explore tutorials</h3>
-        <div id="video-grid"></div>
-    </section>
+    <dialog id="video-dialog" aria-labelledby="player-title">
+        <div class="player-head">
+            <h2 class="player-title" id="player-title"></h2>
+            <button class="player-close" id="close-player" type="button" aria-label="Close video player">×</button>
+        </div>
+        <div class="player-frame" id="player-frame"></div>
+        <div class="player-details">
+            <p class="player-description" id="player-description"></p>
+            <button class="fullscreen-button" id="fullscreen-button" type="button" aria-label="View video fullscreen" title="View fullscreen">⛶</button>
+        </div>
+    </dialog>
 
-    <!-- Login Dialog -->
-    <dialog id="login-dialog">
-        <button class="close-dialog" data-close-dialog="login-dialog">×</button>
-        <h3>Admin log in</h3>
-        <p style="margin-bottom: 1.5rem; opacity: 0.7;">Sign in with the admin email and password created in Supabase.</p>
-        <form id="login-form">
-            <div class="form-group">
-                <label for="login-email">Email</label>
-                <input type="email" id="login-email" required>
+    <dialog id="login-dialog" class="compact-dialog" aria-labelledby="login-title">
+        <form id="login-form" class="admin-form">
+            <div class="dialog-header">
+                <div>
+                    <h2 id="login-title">Admin log in</h2>
+                    <p class="dialog-subtitle">Sign in with the admin email and password created in Supabase.</p>
+                </div>
+                <button class="player-close" type="button" data-close-dialog="login-dialog" aria-label="Close login">×</button>
             </div>
-            <div class="form-group">
+            <div class="form-field">
+                <label for="login-email">Email</label>
+                <input id="login-email" type="email" autocomplete="username" required>
+            </div>
+            <div class="form-field">
                 <label for="login-password">Password</label>
-                <input type="password" id="login-password" required>
+                <input id="login-password" type="password" autocomplete="current-password" required>
             </div>
             <div class="dialog-actions">
-                <button type="button" class="secondary" data-close-dialog="login-dialog">Cancel</button>
-                <button type="submit" id="login-submit" class="primary">Log in</button>
+                <button class="admin-secondary" type="button" data-close-dialog="login-dialog">Cancel</button>
+                <button class="admin-primary" id="login-submit" type="submit">Log in</button>
             </div>
         </form>
     </dialog>
 
-    <!-- Admin Dialog -->
-    <dialog id="admin-dialog">
-        <button class="close-dialog" data-close-dialog="admin-dialog">×</button>
-        <div class="admin-header">
-            <h3>Tutorial manager</h3>
-            <span id="admin-account"></span>
+    <dialog id="admin-dialog" class="compact-dialog" aria-labelledby="admin-title">
+        <div class="dialog-header">
+            <div>
+                <h2 id="admin-title">Tutorial manager</h2>
+                <p class="dialog-subtitle" id="admin-account"></p>
+            </div>
+            <button class="player-close" type="button" data-close-dialog="admin-dialog" aria-label="Close tutorial manager">×</button>
         </div>
-        <div id="admin-notice"></div>
-        <div id="admin-list"></div>
         <div class="dialog-actions">
-            <button type="button" id="logout-button" class="secondary">Log out</button>
-            <button type="button" id="add-tutorial-button" class="primary">＋ Add tutorial</button>
+            <button class="admin-secondary" id="logout-button" type="button">Log out</button>
+            <button class="admin-primary" id="add-tutorial-button" type="button">＋ Add tutorial</button>
         </div>
+        <p class="admin-notice" id="admin-notice" aria-live="polite"></p>
+        <div class="admin-list" id="admin-list"></div>
     </dialog>
 
-    <!-- Editor Dialog -->
-    <dialog id="editor-dialog">
-        <button class="close-dialog" data-close-dialog="editor-dialog">×</button>
-        <h3 id="editor-title">Add a tutorial</h3>
-        <p style="margin-bottom: 1.5rem; opacity: 0.7;">Add a video link, upload a video file, and set a thumbnail.</p>
-        <form id="tutorial-form">
-            <input type="hidden" id="tutorial-id">
-            <div class="form-group">
+    <dialog id="editor-dialog" class="compact-dialog" aria-labelledby="editor-title">
+        <form id="tutorial-form" class="admin-form">
+            <div class="dialog-header">
+                <div>
+                    <h2 id="editor-title">Add a tutorial</h2>
+                    <p class="dialog-subtitle">Add a video link, upload a video file, and set a thumbnail.</p>
+                </div>
+                <button class="player-close" type="button" data-close-dialog="editor-dialog" aria-label="Close tutorial form">×</button>
+            </div>
+            <input id="tutorial-id" type="hidden">
+            <div class="form-field">
                 <label for="tutorial-title">Title</label>
-                <input type="text" id="tutorial-title" required>
+                <input id="tutorial-title" type="text" maxlength="140" required>
             </div>
-            <div class="form-group">
+            <div class="form-field">
                 <label for="tutorial-description">Short description</label>
-                <textarea id="tutorial-description" required></textarea>
+                <textarea id="tutorial-description" maxlength="500" required></textarea>
             </div>
-            <div class="form-group">
+            <div class="form-field">
                 <label for="tutorial-category">Category</label>
                 <select id="tutorial-category" required>
-                    <option value="Personal Computer">Personal Computer</option>
-                    <option value="Pisonet">Pisonet</option>
-                    <option value="Laptop">Laptop</option>
-                    <option value="Others">Others</option>
+                    <option>Personal Computer</option>
+                    <option>Pisonet</option>
+                    <option>Laptop</option>
+                    <option>Others</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label for="tutorial-url">Video source link</label>
-                <input type="url" id="tutorial-url" placeholder="YouTube links play embedded on this page. Direct video URLs work too.">
+            
+            <!-- NEW: Thumbnail Image Upload -->
+            <div class="form-field">
+                <label for="tutorial-thumbnail">Thumbnail Image (Optional)</label>
+                <input id="tutorial-thumbnail" type="file" accept="image/png, image/jpeg, image/webp">
+                <p class="field-help">Upload a cover image for the video. If omitted, a generated color block will be used.</p>
+                <div id="thumbnail-preview" style="margin-top: 8px; display: none;">
+                    <img id="thumbnail-preview-img" src="" alt="Thumbnail preview" style="max-width: 100%; max-height: 150px; border-radius: 8px; border: 1px solid var(--line); object-fit: cover;">
+                </div>
             </div>
-            <div class="form-group">
+
+            <div class="form-field">
+                <label for="tutorial-url">Video source link</label>
+                <input id="tutorial-url" type="url" placeholder="https://...">
+                <p class="field-help">YouTube links play embedded on this page. Direct video URLs work too.</p>
+            </div>
+            <div class="form-field">
                 <label for="tutorial-file">Or upload a video file</label>
-                <input type="file" id="tutorial-file" accept="video/*">
+                <input id="tutorial-file" type="file" accept="video/*">
+                <p class="field-help">Uploads are stored in the configured Supabase Storage bucket.</p>
             </div>
             <div class="dialog-actions">
-                <button type="button" class="secondary" data-close-dialog="editor-dialog">Cancel</button>
-                <button type="submit" id="save-tutorial-button" class="primary">Save tutorial</button>
+                <button class="admin-secondary" type="button" data-close-dialog="editor-dialog">Cancel</button>
+                <button class="admin-primary" id="save-tutorial-button" type="submit">Save tutorial</button>
             </div>
         </form>
     </dialog>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
     <script>
-        // Tutorial App State Manager
-        window.tutorialApp = {
-            tutorials: [],
-            isAdmin: false,
-            
-            setTutorials(tutorials) {
-                this.tutorials = tutorials;
-                this.renderVideoGrid();
-            },
-            
-            getTutorials() {
-                return this.tutorials;
-            },
-            
-            setAdmin(isAdmin) {
-                this.isAdmin = isAdmin;
-                this.renderVideoGrid();
-            },
-            
-            showToast(message) {
-                const toast = document.createElement('div');
-                toast.className = 'toast';
-                toast.textContent = message;
-                document.body.appendChild(toast);
-                setTimeout(() => toast.remove(), 3000);
-            },
-            
-            renderVideoGrid() {
-                const grid = document.getElementById('video-grid');
-                if (!grid) return;
+        (() => {
+            const sampleTutorials = [
+                { id: "1", title: "Speed Up a Slow Windows PC", description: "Simple settings and cleanup steps that can help your computer feel faster.", category: "Personal Computer", symbol: "↗", color: "linear-gradient(135deg,#34452f,#1d2822)", videoUrl: "", thumbnailUrl: null },
+                { id: "2", title: "Build a Clean, Organized Desktop", description: "Keep your files easy to find and make your Windows desktop work for you.", category: "Personal Computer", symbol: "▦", color: "linear-gradient(135deg,#29434a,#1b282e)", videoUrl: "", thumbnailUrl: null },
+                { id: "3", title: "Make Your Laptop Battery Last Longer", description: "Practical power settings to help you stay unplugged for longer.", category: "Laptop", symbol: "▰", color: "linear-gradient(135deg,#3b4930,#242b1d)", videoUrl: "", thumbnailUrl: null }
+            ];
+
+            let tutorials = sampleTutorials;
+            let isAdmin = false;
+            const grid = document.querySelector("#video-grid");
+            const search = document.querySelector("#search");
+            const resultCount = document.querySelector("#result-count");
+            const totalCount = document.querySelector("#total-count");
+            const dialog = document.querySelector("#video-dialog");
+            const playerFrame = document.querySelector("#player-frame");
+            const toast = document.querySelector("#toast");
+            let selectedCategory = "All";
+            let toastTimer;
+
+            // NEW: Thumbnail preview logic
+            const thumbnailInput = document.querySelector("#tutorial-thumbnail");
+            const thumbnailPreview = document.querySelector("#thumbnail-preview");
+            const thumbnailPreviewImg = document.querySelector("#thumbnail-preview-img");
+
+            if (thumbnailInput) {
+                thumbnailInput.addEventListener("change", (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            thumbnailPreviewImg.src = event.target.result;
+                            thumbnailPreview.style.display = "block";
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        thumbnailPreview.style.display = "none";
+                        thumbnailPreviewImg.src = "";
+                    }
+                });
+            }
+
+            const escapeHtml = value => String(value).replace(/[&<>'"]/g, character => ({
+                "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;"
+            })[character]);
+
+            function render() {
+                const query = search.value.trim().toLowerCase();
+                const visibleTutorials = tutorials.filter(tutorial => {
+                    const matchesCategory = selectedCategory === "All" || tutorial.category === selectedCategory;
+                    const searchableText = `${tutorial.title} ${tutorial.description} ${tutorial.category}`.toLowerCase();
+                    return matchesCategory && searchableText.includes(query);
+                });
+
+                totalCount.textContent = tutorials.length;
+                resultCount.textContent = `${visibleTutorials.length} ${visibleTutorials.length === 1 ? "video" : "videos"}`;
                 
-                if (this.tutorials.length === 0) {
-                    grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; opacity: 0.7;">No tutorials available yet.</p>';
-                    return;
-                }
-                
-                grid.innerHTML = this.tutorials.map(tutorial => `
-                    <div class="video-card">
-                        <div class="video-thumbnail" style="background: ${tutorial.color}">
-                            <span>${tutorial.symbol}</span>
-                        </div>
-                        <div class="video-info">
-                            <h4>${this.escapeHtml(tutorial.title)}</h4>
-                            <p>${this.escapeHtml(tutorial.description)}</p>
-                            <span class="video-category">${this.escapeHtml(tutorial.category)}</span>
-                        </div>
-                        ${this.isAdmin ? `
-                            <div class="video-actions">
-                                <button data-edit-video="${tutorial.id}">Edit</button>
-                                <button onclick="window.tutorialApp.playVideo('${tutorial.videoUrl}')">Play</button>
+                grid.innerHTML = visibleTutorials.length
+                    ? visibleTutorials.map((tutorial, index) => {
+                        // NEW: Determine background style based on thumbnail presence
+                        const bgStyle = tutorial.thumbnailUrl 
+                            ? `background: url('${escapeHtml(tutorial.thumbnailUrl)}') center/cover no-repeat;` 
+                            : `background: ${tutorial.color}`;
+                        
+                        const symbolHtml = tutorial.thumbnailUrl 
+                            ? '' 
+                            : `<span class="thumbnail-symbol" aria-hidden="true">${escapeHtml(tutorial.symbol)}</span>`;
+
+                        return `
+                        <article class="video-card">
+                            <button class="thumbnail" type="button" style="${bgStyle}" data-video="${tutorials.indexOf(tutorial)}" aria-label="Play ${escapeHtml(tutorial.title)}">
+                                ${symbolHtml}
+                                <span class="thumbnail-label">${escapeHtml(tutorial.category)} guide</span>
+                                <span class="play-mark" aria-hidden="true">▶</span>
+                            </button>
+                            <div class="video-info">
+                                <span class="channel-mark" aria-hidden="true">CB</span>
+                                <div class="video-copy">
+                                    <h3 class="video-title">${escapeHtml(tutorial.title)}</h3>
+                                    <p class="video-description">${escapeHtml(tutorial.description)}</p>
+                                    <div class="video-meta"><span>Computer Boss</span><span class="meta-dot" aria-hidden="true"></span><span>${escapeHtml(tutorial.category)}</span></div>
+                                </div>
                             </div>
-                        ` : `
-                            <div class="video-actions">
-                                <button onclick="window.tutorialApp.playVideo('${tutorial.videoUrl}')">Play</button>
-                            </div>
-                        `}
-                    </div>
-                `).join('');
-            },
-            
-            escapeHtml(value) {
-                return String(value).replace(/[&<>'"]/g, character => ({
-                    "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;"
-                })[character]);
-            },
-            
-            playVideo(url) {
-                if (!url) {
-                    this.showToast('No video URL available');
-                    return;
-                }
-                
-                // Check if it's a YouTube URL
-                const youtubeMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/);
-                if (youtubeMatch) {
-                    window.open(`https://www.youtube.com/watch?v=${youtubeMatch[1]}`, '_blank');
-                } else {
-                    window.open(url, '_blank');
+                            ${isAdmin ? `<div class="video-admin-actions"><button class="video-edit-button" type="button" data-edit-video="${escapeHtml(tutorial.id)}">Edit tutorial</button></div>` : ""}
+                        </article>
+                    `}).join("")
+                    : '<p class="empty">No tutorials match your search. Try another title or category.</p>';
+
+                grid.querySelectorAll("[data-video]").forEach(button => {
+                    button.addEventListener("click", () => openTutorial(tutorials[Number(button.dataset.video)]));
+                });
+            }
+
+            function youtubeEmbedUrl(videoUrl) {
+                try {
+                    const url = new URL(videoUrl);
+                    let videoId = "";
+                    if (url.hostname === "youtu.be" || url.hostname === "www.youtu.be") {
+                        videoId = url.pathname.split("/").filter(Boolean)[0] || "";
+                    } else if (["youtube.com", "www.youtube.com", "m.youtube.com", "youtube-nocookie.com", "www.youtube-nocookie.com"].includes(url.hostname)) {
+                        videoId = url.searchParams.get("v") || url.pathname.match(/^\/(?:embed|shorts)\/([^/?]+)/)?.[1] || "";
+                    }
+                    return /^[\w-]{11}$/.test(videoId) ? `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0` : "";
+                } catch {
+                    return "";
                 }
             }
-        };
+
+            function openTutorial(tutorial) {
+                if (!tutorial.videoUrl.trim()) {
+                    showToast("This tutorial has no video link yet. Add one from the tutorial manager.");
+                    return;
+                }
+
+                document.querySelector("#player-title").textContent = tutorial.title;
+                document.querySelector("#player-description").textContent = tutorial.description;
+                playerFrame.replaceChildren();
+
+                const embedUrl = youtubeEmbedUrl(tutorial.videoUrl);
+                if (embedUrl) {
+                    const iframe = document.createElement("iframe");
+                    iframe.src = embedUrl;
+                    iframe.title = tutorial.title;
+                    iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+                    iframe.allowFullscreen = true;
+                    playerFrame.append(iframe);
+                } else {
+                    const video = document.createElement("video");
+                    video.src = tutorial.videoUrl;
+                    video.controls = true;
+                    video.autoplay = true;
+                    video.playsInline = true;
+                    video.addEventListener("error", () => showToast("This video could not be loaded. Check the videoUrl in the tutorial list."));
+                    playerFrame.append(video);
+                }
+
+                dialog.showModal();
+            }
+
+            function showToast(message) {
+                toast.textContent = message;
+                toast.classList.add("show");
+                window.clearTimeout(toastTimer);
+                toastTimer = window.setTimeout(() => toast.classList.remove("show"), 4200);
+            }
+
+            function setCategory(category) {
+                selectedCategory = category;
+                document.querySelectorAll("[data-category]").forEach(item => {
+                    const active = item.dataset.category === category;
+                    item.classList.toggle("active", active);
+                    if (item.matches("button")) item.setAttribute("aria-pressed", String(active));
+                    if (item.matches("a")) {
+                        if (active) item.setAttribute("aria-current", "page");
+                        else item.removeAttribute("aria-current");
+                    }
+                });
+                render();
+            }
+
+            document.querySelectorAll("[data-category]").forEach(item => {
+                item.addEventListener("click", event => {
+                    event.preventDefault();
+                    setCategory(item.dataset.category);
+                });
+            });
+
+            document.querySelector("#close-player").addEventListener("click", () => dialog.close());
+            dialog.addEventListener("close", () => playerFrame.replaceChildren());
+            dialog.addEventListener("click", event => {
+                if (event.target === dialog) dialog.close();
+            });
+            document.querySelector("#fullscreen-button").addEventListener("click", async () => {
+                try {
+                    await playerFrame.requestFullscreen();
+                } catch {
+                    showToast("Fullscreen is not available in this browser.");
+                }
+            });
+            search.addEventListener("input", render);
+
+            window.tutorialApp = {
+                getTutorials: () => tutorials,
+                setTutorials(items) {
+                    tutorials = items;
+                    render();
+                },
+                setAdmin(value) {
+                    isAdmin = value;
+                    render();
+                },
+                render,
+                showToast
+            };
+
+            render();
+        })();
     </script>
     <script src="script.js"></script>
 </body>
